@@ -1,0 +1,74 @@
+from fastapi import APIRouter, Depends
+from middleware.get_current_user import get_curent_user
+from api.v1.doc_management.doc_management_service import DocManagementService
+from services.AI_service import AIService
+from core.utils import clean_json_output
+from pydantic import BaseModel
+from langchain_core.prompts import ChatPromptTemplate
+import datetime
+from ..history.history_service import HistoryService
+
+router = APIRouter()
+ai_service = AIService()
+history_service = HistoryService()
+
+doc_management = DocManagementService()
+
+
+@router.get("/summarize/{doc_id}")
+def summarize_resume(doc_id: str,user=Depends(get_curent_user)):
+    user_id = user["_id"]
+    result = doc_management.get_user_document(user_id=user_id, doc_id=doc_id)
+
+    if "ai_summary" in result:
+        cleaned = clean_json_output(result["ai_summary"])
+
+        return {"summary":cleaned}
+    else:
+        user_prompt = result["content"]
+        summarize_system_prompt = ""
+        with open("prompts/summarize_system_prompt.txt","r",encoding="utf-8") as f:
+            summarize_system_prompt = f.read()
+        
+        summary = ai_service.invoke(user_prompt=user_prompt, system_prompt=summarize_system_prompt)
+        cleaned = clean_json_output(summary)
+        data_to_be_save = {
+            "ai_summary":cleaned
+        }
+
+        doc_management.update_document_metadata(user_id=user_id, doc_id=doc_id, update_data=data_to_be_save)
+
+        return {"summary":cleaned}
+    
+
+class UpdateFileMetadata(BaseModel):
+    jd:str
+
+@router.post("/jd-feedack/{doc_id}")
+def jd_feedack(body:UpdateFileMetadata,doc_id: str,user=Depends(get_curent_user)):
+    jd = body.jd
+    user_id = user["_id"]
+
+    content = doc_management.get_doc_details(user_id=user_id, doc_id=doc_id,fields=["content"])
+    
+    feedback_system_prompt = ""
+    with open("prompts/feedback_system_prompt.txt","r",encoding="utf-8") as f:
+        feedback_system_prompt = f.read()
+        
+    feedback_system_prompt = feedback_system_prompt.replace("{{RESUME}}", content["content"])
+    user_prompt = f"""
+    Here is a job description for a role the user wants to apply to:
+    {jd}
+    """
+    summary = ai_service.invoke(user_prompt=user_prompt, system_prompt=feedback_system_prompt)
+    cleaned = clean_json_output(summary)
+    save_metadata = {
+            "document_id":content["_id"], 
+            "userId":user_id,
+            "content":content['content'],
+            "feedback":cleaned,
+            "createdAt": datetime.datetime.now(tz=datetime.timezone.utc),
+            "updatedAt": datetime.datetime.now(tz=datetime.timezone.utc),        
+    }
+    history_service.save_history(metadata=save_metadata)
+    return {"feedback":cleaned}

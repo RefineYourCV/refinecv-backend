@@ -1,0 +1,26 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "authlib>=1.5.2",
+    "boto3>=1.38.8",
+    "fastapi>=0.115.12",
+    "google-generativeai>=0.8.5",
+    "httpx>=0.28.1",
+    "itsdangerous>=2.2.0",
+    "langchain>=0.3.25",
+    "langchain-core>=0.3.58",
+    "langchain-google-genai>=2.0.10",
+    "pydantic-core>=2.33.2",
+    "pydantic-settings>=2.9.1",
+    "pyjwt>=2.10.1",
+    "pymongo>=4.12.1",
+    "pymupdf>=1.25.5",
+    "pymupdf4llm>=0.0.22",
+    "python-dotenv>=1.1.0",
+    "requests>=2.32.3",
+    "uvicorn>=0.34.2",
+]
