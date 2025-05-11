@@ -34,11 +34,17 @@ oauth.register(
 def create_jwt(user_info):
     if "_id" in user_info:
         user_info["_id"] = str(user_info["_id"])
-        
+
+    # Convert datetime fields to ISO strings
+    for key, value in user_info.items():
+        if isinstance(value, datetime):
+            user_info[key] = value.isoformat()
+
     payload = {
         **user_info,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=30)
+        'exp': datetime.utcnow() + datetime.timedelta(days=30)
     }
+
     return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
 
