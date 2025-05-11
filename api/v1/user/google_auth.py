@@ -35,14 +35,13 @@ def create_jwt(user_info):
     if "_id" in user_info:
         user_info["_id"] = str(user_info["_id"])
 
-    # Convert datetime fields to ISO strings
     for key, value in user_info.items():
-        if isinstance(value, datetime):
+        if isinstance(value, datetime.datetime):  # Use datetime.datetime here
             user_info[key] = value.isoformat()
 
     payload = {
         **user_info,
-        'exp': datetime.utcnow() + datetime.timedelta(days=30)
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=30)  # Use full path
     }
 
     return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
