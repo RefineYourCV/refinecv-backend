@@ -7,7 +7,7 @@ from starlette.config import Config
 import jwt  # PyJWT
 import datetime
 from .user_service import UserService
-
+from core.config import settings
 
 
 # config
@@ -44,7 +44,7 @@ def create_jwt(user_info):
 
 @router.get('/auth/google')
 async def login(request:Request):
-    redirect_uri = request.url_for('auth_google_callback')
+    redirect_uri = f"{settings.BACKEND_URL}/v1/user/auth/google/callback"
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
@@ -85,5 +85,5 @@ async def auth_google_callback(request: Request):
     print(app_jwt)
     
     # For Chrome Extension → redirect with token in query
-    extension_redirect = f'https://pbabekjodobbekbjcchhfbhmcgfjmmnc.chromiumapp.org/callback?token=Bearer {app_jwt}'
+    extension_redirect = f'{settings.EXTENSION_URL}/callback?token=Bearer {app_jwt}'
     return RedirectResponse(url=extension_redirect)
