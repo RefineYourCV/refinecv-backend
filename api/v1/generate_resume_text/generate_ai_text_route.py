@@ -7,13 +7,14 @@ from pydantic import BaseModel
 from langchain_core.prompts import ChatPromptTemplate
 import datetime
 from ..history.history_service import HistoryService
+from ..user.user_service import UserService
 
 router = APIRouter()
 ai_service = AIService()
 history_service = HistoryService()
 
 doc_management = DocManagementService()
-
+user_service = UserService()
 
 @router.get("/summarize/{doc_id}")
 def summarize_resume(doc_id: str,user=Depends(get_curent_user)):
@@ -48,7 +49,11 @@ class UpdateFileMetadata(BaseModel):
 def jd_feedack(body:UpdateFileMetadata,doc_id: str,user=Depends(get_curent_user)):
     jd = body.jd
     user_id = user["_id"]
-
+    user = user_service.get_user_by_id(user_id=user_id)
+    
+    if(user["credit"] == 0):
+        return {"error":"No credit left. Please retry after 16 hours"}
+    
     content = doc_management.get_doc_details(user_id=user_id, doc_id=doc_id,fields=["content"])
     
     feedback_system_prompt = ""
@@ -71,9 +76,8 @@ def jd_feedack(body:UpdateFileMetadata,doc_id: str,user=Depends(get_curent_user)
             "updatedAt": datetime.datetime.now(tz=datetime.timezone.utc),        
     }
     history_service.save_history(metadata=save_metadata)
+    user_service.decrease_user_credit_safe(user_id=user_id)
     return {"feedback":cleaned}
-
-
 
 
 
