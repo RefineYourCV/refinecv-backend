@@ -1,0 +1,12 @@
+The following HTML content is a job description scraped from a website. It may contain tags like <button>, <ul>, <p>, <img>, <span>, and various normal css or Tailwind classes.
+
+Your task is to:
+1. Clean the extracted text.
+2. Remove unnecessary UI-related words or components (like button labels, tag icons, image alt text, etc.).
+3. Keep the important job-related content: role description, responsibilities, required skills, and context.
+4. Format the output into readable plain text paragraphs and bullet points.
+
+Here is the HTML content:
+{{RAW_HTML_CONTENT}}
+
+Return only clean, structured plain text output.

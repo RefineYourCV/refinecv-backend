@@ -72,3 +72,21 @@ def jd_feedack(body:UpdateFileMetadata,doc_id: str,user=Depends(get_curent_user)
     }
     history_service.save_history(metadata=save_metadata)
     return {"feedback":cleaned}
+
+
+
+
+
+@router.post("/clean-jd")
+def jd_feedack(body:UpdateFileMetadata):
+    jd = body.jd
+
+    clean_system_prompt = ""
+    with open("prompts/clean_jd_system_prompt.txt","r",encoding="utf-8") as f:
+        clean_system_prompt = f.read()
+        
+    clean_system_prompt = clean_system_prompt.replace("{{RAW_HTML_CONTENT}}", jd)
+
+    clean_html = ai_service.invoke(user_prompt="clean this html formatted job description", system_prompt=clean_system_prompt)
+
+    return {"clean_data":clean_html}
