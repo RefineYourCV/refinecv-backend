@@ -28,6 +28,7 @@ def get_curent_user(request:Request):
         if last_added.tzinfo is None:
             last_added = last_added.replace(tzinfo=datetime.timezone.utc)
         hours_passed = (now - last_added).total_seconds() / 3600
+        print('hours_passed',hours_passed)
         if user["credit"] < 3 and hours_passed >= 16:
             user_service.update_user_credit(user_id=user_id, now=now)
             user["credit"] += 1

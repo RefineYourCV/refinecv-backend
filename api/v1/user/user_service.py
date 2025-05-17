@@ -48,6 +48,7 @@ class UserService:
                     "$set": {"lastCreditAddedAt": now}
                 }
         )
+        print('result',result)
         return result
     
     @staticmethod
