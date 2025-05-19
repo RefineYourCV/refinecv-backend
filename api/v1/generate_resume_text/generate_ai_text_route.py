@@ -22,7 +22,7 @@ def summarize_resume(doc_id: str,user=Depends(get_curent_user)):
     result = doc_management.get_user_document(user_id=user_id, doc_id=doc_id)
 
     if "ai_summary" in result:
-        cleaned = clean_json_output(result["ai_summary"])
+        cleaned = result["ai_summary"]
 
         return {"summary":cleaned}
     else:
@@ -82,7 +82,7 @@ def jd_feedack(body:UpdateFileMetadata,doc_id: str,user=Depends(get_curent_user)
 
 
 @router.post("/clean-jd")
-def jd_feedack(body:UpdateFileMetadata):
+def clean_jd(body:UpdateFileMetadata):
     jd = body.jd
 
     clean_system_prompt = ""
