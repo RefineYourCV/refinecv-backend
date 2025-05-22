@@ -2,7 +2,7 @@ from typing import Optional
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 from core.config import settings
-
+from langfuse.decorators import observe
 class AIService:
     def __init__(self, provider: str = "google", default_model: str = "gemini-2.0-flash"):
         self.provider = provider
@@ -13,7 +13,8 @@ class AIService:
             return ChatGoogleGenerativeAI(model=model, api_key=settings.GEMINI_API_KEY)
         else:
             raise ValueError(f"Unsupported provider: {self.provider}")
-
+        
+    @observe(as_type="generation")
     def invoke(
         self,
         user_prompt: str,
