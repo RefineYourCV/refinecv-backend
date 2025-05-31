@@ -13,7 +13,8 @@ class Settings(BaseSettings):
     GEMINI_API_KEY:str
     BACKEND_URL:str
     EXTENSION_URL:str
-
+    LSQY_ENDPOINT:str
+    LSQY_API_KEY:str
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore"

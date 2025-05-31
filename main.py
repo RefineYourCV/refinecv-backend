@@ -9,11 +9,11 @@ from api.v1.user import user_routes
 from api.v1.doc_management import doc_management_routes
 from api.v1.generate_resume_text import generate_ai_text_route
 from api.v1.history import history_routes
-
+from api.v1.payment import payment_routes
 load_dotenv()
 
 
-app = FastAPI(title="ElevateCV")
+app = FastAPI(title="RefineCV")
 
 # Add session middleware
 app.add_middleware(SessionMiddleware, secret_key=settings.GOOGLE_CLIENT_SECRET)
@@ -27,6 +27,10 @@ app.include_router(doc_management_routes.router, prefix="/v1/doc", tags=["User D
 app.include_router(generate_ai_text_route.router, prefix="/v1/resume", tags=["Resume Management"])
 
 app.include_router(history_routes.router, prefix="/v1/history", tags=["History"])
+
+
+app.include_router(payment_routes.router, prefix="/v1/payment", tags=["Payment"])
+
 
 @app.get('/')
 def root():

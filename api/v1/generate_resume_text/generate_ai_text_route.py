@@ -4,7 +4,6 @@ from api.v1.doc_management.doc_management_service import DocManagementService
 from services.AI_service import AIService
 from core.utils import clean_json_output
 from pydantic import BaseModel
-from langchain_core.prompts import ChatPromptTemplate
 import datetime
 from ..history.history_service import HistoryService
 from ..user.user_service import UserService
@@ -57,7 +56,7 @@ def jd_feedack(body:UpdateFileMetadata,doc_id: str,user=Depends(get_curent_user)
     content = doc_management.get_doc_details(user_id=user_id, doc_id=doc_id,fields=["content"])
     
     feedback_system_prompt = ""
-    with open("prompts/feedback_system_prompt.txt","r",encoding="utf-8") as f:
+    with open("prompts/feedback_system_prompt2.txt","r",encoding="utf-8") as f:
         feedback_system_prompt = f.read()
         
     feedback_system_prompt = feedback_system_prompt.replace("{{RESUME}}", content["content"])
@@ -73,7 +72,8 @@ def jd_feedack(body:UpdateFileMetadata,doc_id: str,user=Depends(get_curent_user)
             "content":content['content'],
             "feedback":cleaned,
             "createdAt": datetime.datetime.now(tz=datetime.timezone.utc),
-            "updatedAt": datetime.datetime.now(tz=datetime.timezone.utc),        
+            "updatedAt": datetime.datetime.now(tz=datetime.timezone.utc),   
+            "jd":jd
     }
     history_service.save_history(metadata=save_metadata)
     user_service.decrease_user_credit_safe(user_id=user_id)
