@@ -64,7 +64,10 @@ def jd_feedack(body:UpdateFileMetadata,doc_id: str,user=Depends(get_curent_user)
     Here is a job description for a role the user wants to apply to:
     {jd}
     """
+    print('feedback_system_prompt',feedback_system_prompt)
+    print('user_prompt',user_prompt)
     summary = ai_service.invoke(user_prompt=user_prompt, system_prompt=feedback_system_prompt)
+    print("summary",summary)
     cleaned = clean_json_output(summary)
     save_metadata = {
             "document_id":content["_id"], 
